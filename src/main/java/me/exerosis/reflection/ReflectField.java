@@ -86,7 +86,7 @@ public class ReflectField<T> {
 
 
     public ReflectClass<Object> getReflectType() {
-        return new ReflectClass<>(field.getType());
+        return new ReflectClass<>(field.getType()).setInstance(instance);
     }
 
     public ReflectClass<Object> getDeclaringClass() {

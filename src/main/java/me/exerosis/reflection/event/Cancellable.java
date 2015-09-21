@@ -1,7 +1,11 @@
 package me.exerosis.reflection.event;
 
 public interface Cancellable {
-    boolean isCancelled();
+    default boolean isCancelled() {
+        return CancellableStorage.isCancelled(this);
+    }
 
-    void setCancelled(boolean cancelled);
+    default void setCancelled(boolean cancelled) {
+        CancellableStorage.setCancelled(this, cancelled);
+    }
 }

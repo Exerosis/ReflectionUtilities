@@ -32,13 +32,20 @@ public class ReflectMethod {
         this.instance = instance;
     }
 
-    public Object call(Object... params) {
+    public Object callStatic(Object... params) {
+        return callInstance(null, params);
+    }
+
+    public Object callInstance(Object instance, Object... params) {
         try {
             return method.invoke(instance, params);
         } catch (Exception e) {
-            e.printStackTrace();
             throw new RuntimeException(e);
         }
+    }
+
+    public Object call(Object... params) {
+        return callInstance(instance, params);
     }
 
     public String getName() {

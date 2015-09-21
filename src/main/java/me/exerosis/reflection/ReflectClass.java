@@ -53,6 +53,7 @@ public class ReflectClass<T> {
     public <K> ReflectField<K> getField(Class<K> type) {
         return getField(new ReflectClass<K>(type));
     }
+
     public <K> ReflectField<K> getField(ReflectClass<K> type) {
         return getField(type, 0);
     }
@@ -104,8 +105,10 @@ public class ReflectClass<T> {
     public Class<?>[] getGenericTypes() {
         Type[] genericTypes = ((ParameterizedType) clazz.getGenericSuperclass()).getActualTypeArguments();
         Class<?>[] genericClassTypes = new Class<?>[genericTypes.length];
-        for (int x = 0; x < genericTypes.length; x++)
-            genericClassTypes[x] = (Class<?>) genericTypes[x];
+        for (int x = 0; x < genericTypes.length; x++) {
+            System.out.println(genericTypes[x]);
+            //genericClassTypes[x] = (Class<?>) genericTypes[x];
+        }
         return genericClassTypes;
     }
 
@@ -116,12 +119,21 @@ public class ReflectClass<T> {
                 return constructor;
         throw new ConstructorNotFoundException(clazz);
     }
+
     public Constructor<?> getConstructor(Class<?>... paramTypes) {
+        return getConstructor(0, paramTypes);
+    }
+
+    public Constructor<?> getConstructor(int index, Class<?>... paramTypes) {
+        int i = 0;
         Class<?>[] types = CorrespondingType.getPrimitive(paramTypes);
         for (Constructor<?> constructor : allConstructors) {
             Class<?>[] constructorTypes = CorrespondingType.getPrimitive(constructor.getParameterTypes());
-            if (CorrespondingType.compare(types, constructorTypes))
-                return constructor;
+            if (CorrespondingType.compare(types, constructorTypes)){
+                if(i++ == index)
+                    return constructor;
+            }
+
         }
         throw new ConstructorNotFoundException(clazz, types);
     }
@@ -226,8 +238,9 @@ public class ReflectClass<T> {
         return instance;
     }
 
-    public void setInstance(T instance) {
+    public ReflectClass<T> setInstance(T instance) {
         this.instance = instance;
+        return this;
     }
 
     public Class<?> getClazz() {
@@ -244,5 +257,15 @@ public class ReflectClass<T> {
 
     public boolean isClassEqual(ReflectClass<?> otherClass) {
         return clazz.equals(otherClass.getClazz());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof ReflectClass) {
+            Class clazz = ((ReflectClass) obj).getClazz();
+            Object instance = ((ReflectClass) obj).getInstance();
+            return this.clazz.equals(clazz) && (this.instance == null || (instance == null || this.instance.equals(instance)));
+        }
+        return false;
     }
 }

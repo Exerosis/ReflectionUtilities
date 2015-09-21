@@ -7,15 +7,13 @@ public final class Reflect {
     private static String nmsClassPrefix = "";
 
     static {
-        ReflectClass<?> bukkitClass = Class("org.bukkit.Bukkit");
-        if (bukkitClass != null) {
+        try {
+            ReflectClass<?> bukkitClass = Class("org.bukkit.Bukkit");
             bukkitClassPrefix = bukkitClass.getField("server").getValue().getClass().getPackage().getName();
             nmsClassPrefix = bukkitClassPrefix.replace("org.bukkit.craftbukkit", "net.minecraft.server");
-        } else
+        } catch (Exception e) {
             System.err.print("[Reflection] No Bukkit class found, assumed running outside of Bukkit context!");
-    }
-
-    private Reflect() {
+        }
     }
 
     // Class creators.
