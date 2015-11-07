@@ -52,6 +52,7 @@ public class ReflectField<T> {
         try {
             return (T) field.get(instance);
         } catch (Exception ignored) {
+            ignored.printStackTrace();
             return null;
         }
     }
@@ -70,6 +71,10 @@ public class ReflectField<T> {
             field.set(instance, value);
         } catch (Exception ignored) {
         }
+    }
+
+    public ReflectClass<T> getReflectValue() {
+        return Reflect.Class(getValue());
     }
 
     public void setValueCast(Object value) {

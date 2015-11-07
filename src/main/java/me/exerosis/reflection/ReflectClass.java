@@ -22,15 +22,15 @@ public class ReflectClass<T> {
 
     @SuppressWarnings("unchecked")
     protected ReflectClass(T instance) {
+        if (instance == null)
+            throw new IllegalArgumentException("Cannot create a null instance of ReflectClass!");
         this.instance = instance;
-        if (instance != null)
-            clazz = instance.getClass();
+        clazz = instance.getClass();
         fillLists();
     }
 
     private void fillLists() {
-        Constructor<?>[] constructors = clazz.getConstructors();
-        allConstructors.addAll(Arrays.asList(constructors));
+        allConstructors.addAll(Arrays.asList(clazz.getConstructors()));
         allConstructors.addAll(Arrays.asList(clazz.getDeclaredConstructors()));
 
         for (Method method : clazz.getMethods())
@@ -51,7 +51,7 @@ public class ReflectClass<T> {
     //TODO add all potential getters :D
     //Field getters.
     public <K> ReflectField<K> getField(Class<K> type) {
-        return getField(new ReflectClass<K>(type));
+        return getField(new ReflectClass<>(type));
     }
 
     public <K> ReflectField<K> getField(ReflectClass<K> type) {
@@ -105,8 +105,8 @@ public class ReflectClass<T> {
     public Class<?>[] getGenericTypes() {
         Type[] genericTypes = ((ParameterizedType) clazz.getGenericSuperclass()).getActualTypeArguments();
         Class<?>[] genericClassTypes = new Class<?>[genericTypes.length];
-        for (int x = 0; x < genericTypes.length; x++) {
-            System.out.println(genericTypes[x]);
+        for (Type genericType : genericTypes) {
+            System.out.println(genericType);
             //genericClassTypes[x] = (Class<?>) genericTypes[x];
         }
         return genericClassTypes;
@@ -129,8 +129,8 @@ public class ReflectClass<T> {
         Class<?>[] types = CorrespondingType.getPrimitive(paramTypes);
         for (Constructor<?> constructor : allConstructors) {
             Class<?>[] constructorTypes = CorrespondingType.getPrimitive(constructor.getParameterTypes());
-            if (CorrespondingType.compare(types, constructorTypes)){
-                if(i++ == index)
+            if (CorrespondingType.compare(types, constructorTypes)) {
+                if (i++ == index)
                     return constructor;
             }
 
