@@ -2,7 +2,11 @@ package me.exerosis.reflection;
 
 import me.exerosis.reflection.exceptions.notfound.ReflectClassNotFoundException;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public final class Reflect {
+    private static Map<String, Class<?>> classLookup = new HashMap<>();
     private static String bukkitClassPrefix = "";
     private static String nmsClassPrefix = "";
 
@@ -20,15 +24,14 @@ public final class Reflect {
     public static ReflectClass<Object> Class(String className) {
         className = className.replace("{cb}", bukkitClassPrefix).replace("{nms}", nmsClassPrefix);
 
-        Class<?> clazz = null;
-        try {
-            clazz = Class.forName(className);
-        } catch (ClassNotFoundException ignored) {
-        }
-
+        Class<?> clazz = classLookup.get(className);
         if (clazz != null)
-            return new ReflectClass<>(clazz);
-        throw new ReflectClassNotFoundException(className);
+            try {
+                clazz = Class.forName(className);
+            } catch (ClassNotFoundException ignored) {
+                throw new ReflectClassNotFoundException(className);
+            }
+        return new ReflectClass<>(clazz);
     }
 
     public static <T> ReflectClass<T> Class(T instance) {
