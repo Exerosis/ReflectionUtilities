@@ -48,7 +48,7 @@ public class ReflectField<T> {
         field.setAccessible(true);
     }
 
-    public T getValue() {
+    public T value() {
         try {
             return (T) field.get(instance);
         } catch (Exception ignored) {
@@ -73,15 +73,16 @@ public class ReflectField<T> {
         }
     }
 
-    public ReflectClass<T> getReflectValue() {
-        return Reflect.Class(getValue());
+    public ReflectClass<T> reflectValue() {
+        return Reflect.Class(value());
     }
 
     public void setValueCast(Object value) {
         setValue((T) value);
     }
 
-    public <K> K getValue(Class<K> type) {
+    //TODO Handle Exception
+    public <K> K value(Class<K> type) {
         try {
             return type.cast(field.get(instance));
         } catch (Exception ignored) {
@@ -89,6 +90,9 @@ public class ReflectField<T> {
         }
     }
 
+    public <K> K value(ReflectClass<K> type) {
+       return value(type.getClazz());
+    }
 
     public ReflectClass<Object> getReflectType() {
         return new ReflectClass<>(field.getType()).setInstance(instance);

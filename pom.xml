@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>me.exerosis.reflection</groupId>
-    <artifactId>reflection-utilities</artifactId>
+    <artifactId>ReflectionUtilites</artifactId>
     <version>1.1</version>
     <build>
         <plugins>

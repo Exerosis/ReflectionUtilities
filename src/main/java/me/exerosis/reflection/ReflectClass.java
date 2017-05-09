@@ -8,19 +8,21 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+@SuppressWarnings("unchecked")
 public class ReflectClass<T> {
     private Class<?> clazz;
     private T instance;
-    private ArrayList<ReflectMethod> allMethods = new ArrayList<>();
-    private ArrayList<ReflectField<Object>> allFields = new ArrayList<>();
-    private ArrayList<Constructor<?>> allConstructors = new ArrayList<>();
+    private List<ReflectMethod> allMethods = new ArrayList<>();
+    private List<ReflectField<Object>> allFields = new ArrayList<>();
+    private List<Constructor<?>> allConstructors = new ArrayList<>();
 
     protected ReflectClass(Class<?> clazz) {
+        if (clazz == null)
+            throw new IllegalArgumentException("Cannot create a null instance of ReflectClass!");
         this.clazz = clazz;
         fillLists();
     }
 
-    @SuppressWarnings("unchecked")
     protected ReflectClass(T instance) {
         if (instance == null)
             throw new IllegalArgumentException("Cannot create a null instance of ReflectClass!");
@@ -50,37 +52,36 @@ public class ReflectClass<T> {
 
     //TODO add all potential getters :D
     //Field getters.
-    public <K> ReflectField<K> getField(Class<K> type) {
-        return getField(new ReflectClass<>(type));
+    public <K> ReflectField<K> field(Class<K> type) {
+        return field(new ReflectClass<>(type));
     }
 
-    public <K> ReflectField<K> getField(ReflectClass<K> type) {
-        return getField(type, 0);
+    public <K> ReflectField<K> field(ReflectClass<K> type) {
+        return field(type, 0);
     }
 
-    public <K> ReflectField<K> getField(Class<K> type, int pos) {
-        return getField(new ReflectClass<>(type), pos);
+    public <K> ReflectField<K> field(Class<K> type, int pos) {
+        return field(new ReflectClass<>(type), pos);
     }
 
-    public <K> ReflectField<K> getField(ReflectClass<K> type, int pos) {
-        return getField("", type, pos);
+    public <K> ReflectField<K> field(ReflectClass<K> type, int pos) {
+        return field("", type, pos);
     }
 
-    public <K> ReflectField<K> getField(Class<K> type, String name) {
-        return getField(new ReflectClass<>(type), name);
+    public <K> ReflectField<K> field(Class<K> type, String name) {
+        return field(new ReflectClass<>(type), name);
     }
 
-    public <K> ReflectField<K> getField(ReflectClass<K> type, String name) {
-        return getField(name, type, -1);
+    public <K> ReflectField<K> field(ReflectClass<K> type, String name) {
+        return field(name, type, -1);
     }
 
-    public ReflectField<Object> getField(String name) {
-        return getField(name, null, -1);
+    public <K> ReflectField<K> field(String name) {
+        return field(name, null, -1);
     }
 
 
-    @SuppressWarnings("unchecked")
-    private <K> ReflectField<K> getField(String name, ReflectClass<K> type, int pos) {
+    private <K> ReflectField<K> field(String name, ReflectClass<K> type, int pos) {
         int index = -1;
         for (ReflectField<Object> field : allFields) {
             if (field.getName().equals(name))
@@ -102,12 +103,69 @@ public class ReflectClass<T> {
         throw new FieldNotFoundException(clazz, name, type == null ? null : type.getClazz(), pos);
     }
 
+    public <K> K value(Class<K> type) {
+        return field(type).value();
+    }
+
+    public <K> K value(ReflectClass<K> type) {
+        return field(type).value();
+    }
+
+    public <K> K value(Class<K> type, int pos) {
+        return field(type, pos).value();
+    }
+
+    public <K> K value(ReflectClass<K> type, int pos) {
+        return field(type, pos).value();
+    }
+
+    public <K> K value(Class<K> type, String name) {
+        return field(type, name).value();
+    }
+
+    public <K> K value(ReflectClass<K> type, String name) {
+        return field(type, name).value();
+    }
+
+    public <K> K value(String name) {
+        return this.<K>field(name).value();
+    }
+
+
+    public <K> ReflectClass<K> access(Class<K> type) {
+        return new ReflectClass<>(value(type));
+    }
+
+    public <K> ReflectClass<K> access(ReflectClass<K> type) {
+        return new ReflectClass<>(value(type));
+    }
+
+    public <K> ReflectClass<K> access(Class<K> type, int pos) {
+        return new ReflectClass<>(value(type, pos));
+    }
+
+    public <K> ReflectClass<K> access(ReflectClass<K> type, int pos) {
+        return new ReflectClass<>(value(type, pos));
+    }
+
+    public <K> ReflectClass<K> access(Class<K> type, String name) {
+        return new ReflectClass<>(value(type, name));
+    }
+
+    public <K> ReflectClass<K> access(ReflectClass<K> type, String name) {
+        return new ReflectClass<>(value(type, name));
+    }
+
+    public <K> ReflectClass<K> access(String name) {
+        return new ReflectClass<>(this.<K>value(name));
+    }
+
     public Class<?>[] getGenericTypes() {
         Type[] genericTypes = ((ParameterizedType) clazz.getGenericSuperclass()).getActualTypeArguments();
         Class<?>[] genericClassTypes = new Class<?>[genericTypes.length];
         for (Type genericType : genericTypes) {
             System.out.println(genericType);
-            //genericClassTypes[x] = (Class<?>) genericTypes[x];
+            //genericClassTypes[x] = (ReflectClass<?>) genericTypes[x];
         }
         return genericClassTypes;
     }
@@ -138,7 +196,6 @@ public class ReflectClass<T> {
         throw new ConstructorNotFoundException(clazz, types);
     }
 
-    @SuppressWarnings("unchecked")
     public T newInstance(Object... args) {
         try {
             instance = (T) getConstructor(CorrespondingType.getPrimitive(args)).newInstance(args);
@@ -150,21 +207,25 @@ public class ReflectClass<T> {
 
     //TODO Remake method getters to work with return type, params, and name as well as create exception for method not found!
     //Method getters.
-    public ReflectMethod getMethodByReturn(Class<?> returnType) {
+    public <R> ReflectMethod<R> getMethodByReturn(Class<R> returnType) {
         for (ReflectMethod method : allMethods)
             if (returnType.equals(method.getReturnType()))
                 return method;
         throw new RuntimeException("Method not found!");
     }
 
-    public ReflectMethod getMethod(Class<?>... paramTypes) {
+    public <R> ReflectMethod<R> getMethodByReturn(ReflectClass<R> returnType) {
+        return getMethodByReturn((Class<R>) returnType.getClazz());
+    }
+
+    public <R> ReflectMethod<R> getMethod(Class<?>... paramTypes) {
         ReflectClass<?>[] classes = new ReflectClass[paramTypes.length];
         for (int x = 0; x < classes.length; x++)
             classes[x] = Reflect.Class(paramTypes[x]);
         return getMethod(classes);
     }
 
-    public ReflectMethod getMethod(ReflectClass<?>... paramTypes) {
+    public <R> ReflectMethod<R> getMethod(ReflectClass<?>... paramTypes) {
         Class<?>[] t = CorrespondingType.getPrimitive(paramTypes);
         for (ReflectMethod method : getMethods()) {
             Class<?>[] types = CorrespondingType.getPrimitive(method.getParameterTypes());
@@ -174,7 +235,7 @@ public class ReflectClass<T> {
         return null;
     }
 
-    public ReflectMethod getMethod(String name, Class<?>... paramTypes) {
+    public <R> ReflectMethod<R> getMethod(String name, Class<?>... paramTypes) {
         Class<?>[] t = CorrespondingType.getPrimitive(paramTypes);
         for (ReflectMethod method : getMethods()) {
             Class<?>[] types = CorrespondingType.getPrimitive(method.getParameterTypes());
@@ -184,7 +245,7 @@ public class ReflectClass<T> {
         return null;
     }
 
-    public ReflectMethod getMethod(String name) {
+    public <R> ReflectMethod<R> getMethod(String name) {
         for (ReflectMethod method : getMethods())
             if (method.getName().equals(name))
                 return method;
@@ -226,11 +287,11 @@ public class ReflectClass<T> {
     }
 
     //All fields and methods
-    public ArrayList<ReflectMethod> getAllMethods() {
+    public List<ReflectMethod> getAllMethods() {
         return allMethods;
     }
 
-    public ArrayList<ReflectField<Object>> getAllFields() {
+    public List<ReflectField<Object>> getAllFields() {
         return allFields;
     }
 
@@ -243,8 +304,8 @@ public class ReflectClass<T> {
         return this;
     }
 
-    public Class<?> getClazz() {
-        return clazz;
+    public Class<T> getClazz() {
+        return (Class<T>) clazz;
     }
 
     public Package getPackage() {
@@ -267,5 +328,9 @@ public class ReflectClass<T> {
             return this.clazz.equals(clazz) && (this.instance == null || (instance == null || this.instance.equals(instance)));
         }
         return false;
+    }
+
+    public T cast(Object object) {
+        return (T) object;
     }
 }

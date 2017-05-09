@@ -13,19 +13,18 @@ public final class Reflect {
     static {
         try {
             ReflectClass<?> bukkitClass = Class("org.bukkit.Bukkit");
-            bukkitClassPrefix = bukkitClass.getField("server").getValue().getClass().getPackage().getName();
+            bukkitClassPrefix = bukkitClass.value("server").getClass().getPackage().getName();
             nmsClassPrefix = bukkitClassPrefix.replace("org.bukkit.craftbukkit", "net.minecraft.server");
         } catch (Exception e) {
             System.err.print("[Reflection] No Bukkit class found, assumed running outside of Bukkit context!");
         }
     }
 
-    // Class creators.
+    // ReflectClass creators.
     public static ReflectClass<Object> Class(String className) {
         className = className.replace("{cb}", bukkitClassPrefix).replace("{nms}", nmsClassPrefix);
-
         Class<?> clazz = classLookup.get(className);
-        if (clazz != null)
+        if (clazz == null)
             try {
                 clazz = Class.forName(className);
             } catch (ClassNotFoundException ignored) {
@@ -46,16 +45,16 @@ public final class Reflect {
     // Field Creators
     //~Instance ~Type ~Position
     public static <K, T> ReflectField<K> Field(T instance, ReflectClass<K> type, int pos) {
-        return new ReflectClass<>(instance).getField(type, pos);
+        return new ReflectClass<>(instance).field(type, pos);
     }
 
     public static <K, T> ReflectField<K> Field(T instance, Class<K> type, int pos) {
         return Field(instance, new ReflectClass<>(type), pos);
     }
 
-    //~Class ~Type ~Position
+    //~ReflectClass ~Type ~Position
     public static <K, T> ReflectField<K> Field(Class<T> clazz, ReflectClass<K> type, int pos) {
-        return new ReflectClass<>(clazz).getField(type, pos);
+        return new ReflectClass<>(clazz).field(type, pos);
     }
 
     public static <K, T> ReflectField<K> Field(Class<T> clazz, Class<K> type, int pos) {
@@ -69,16 +68,16 @@ public final class Reflect {
     }
 
     public static <K, T> ReflectField<K> Field(T instance, ReflectClass<K> type, String name) {
-        return new ReflectClass<>(instance).getField(type, name);
+        return new ReflectClass<>(instance).field(type, name);
     }
 
-    //~Class ~Type ~Name
+    //~ReflectClass ~Type ~Name
     public static <K, T> ReflectField<K> Field(Class<T> clazz, Class<K> type, String name) {
         return Field(clazz, new ReflectClass<>(type), name);
     }
 
     public static <K, T> ReflectField<K> Field(Class<T> clazz, ReflectClass<K> type, String name) {
-        return new ReflectClass<>(clazz).getField(type, name);
+        return new ReflectClass<>(clazz).field(type, name);
     }
 
 
@@ -91,7 +90,7 @@ public final class Reflect {
         return Field(instance, type, 0);
     }
 
-    //~Class ~Type
+    //~ReflectClass ~Type
     public static <K, T> ReflectField<K> Field(Class<T> clazz, Class<K> type) {
         return Field(clazz, type, 0);
     }
@@ -103,12 +102,12 @@ public final class Reflect {
 
     //~Instance ~Name
     public static <T> ReflectField<?> Field(T instance, String name) {
-        return new ReflectClass<>(instance).getField(name);
+        return new ReflectClass<>(instance).field(name);
     }
 
-    //~Class ~Name
+    //~ReflectClass ~Name
     public static <T> ReflectField<?> Field(Class<T> clazz, String name) {
-        return new ReflectClass<>(clazz).getField(name);
+        return new ReflectClass<>(clazz).field(name);
     }
 
     //Prefix Getters

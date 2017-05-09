@@ -9,6 +9,6 @@ import me.exerosis.reflection.exceptions.node.ExceptionNode;
  */
 public class ReflectClassNotFoundException extends ReflectException {
     public ReflectClassNotFoundException(String className) {
-        super(new ExceptionBuilder("Class not found!", new ExceptionNode("Class Name", className)));
+        super(new ExceptionBuilder("ReflectClass not found!", new ExceptionNode("ReflectClass Name", className)));
     }
 }
