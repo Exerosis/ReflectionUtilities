@@ -39,7 +39,7 @@ public class FieldNotFoundException extends ReflectException {
     private static ExceptionNode[] getExceptionNodes(Class<?> parent, String name, Class<?> type, int position) {
         ExceptionNode[] nodes = new ExceptionNode[4];
         if (parent != null)
-            nodes[0] = new ExceptionNode("Class", parent.getSimpleName());
+            nodes[0] = new ExceptionNode("ReflectClass", parent.getSimpleName());
         if (type != null)
             nodes[2] = new ExceptionNode("Type", type.getSimpleName());
 

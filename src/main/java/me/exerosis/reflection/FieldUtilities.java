@@ -1,4 +1,4 @@
-package me.exerosis.reflection.beta;
+package me.exerosis.reflection;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;

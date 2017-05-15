@@ -1,12 +1,12 @@
-package me.exerosis.reflection.gamma;
+package me.exerosis.reflection.alpha;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-import static me.exerosis.reflection.beta.FieldUtilities.*;
+import static me.exerosis.reflection.FieldUtilities.*;
 
 @SuppressWarnings("unchecked")
-interface ReflectField<FieldType, ClassType> {
+public interface ReflectField<FieldType, ClassType> {
     Field toField();
 
     default <CastType> CastType cast(ClassType instance) {

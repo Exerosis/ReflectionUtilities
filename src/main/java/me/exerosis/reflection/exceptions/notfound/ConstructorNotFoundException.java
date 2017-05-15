@@ -17,11 +17,11 @@ public class ConstructorNotFoundException extends ReflectException {
 
         if (params.length == 0)
             return nodes;
-        String paramsString = "\n";
+        StringBuilder builder = new StringBuilder("\n");
         for (Class<?> param : params)
-            paramsString += param.getSimpleName() + "\n\t";
+            builder.append('-').append(param.getSimpleName()).append("\n\t");
 
-        nodes[1] = new ExceptionNode("Params", paramsString);
+        nodes[1] = new ExceptionNode("Params", builder.toString());
         return nodes;
     }
 }

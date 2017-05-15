@@ -40,6 +40,15 @@ public enum CorrespondingType {
         this.reference = reference;
     }
 
+
+    public static Class<?>[] getClassList(Object... objects) {
+        Class<?>[] classes = new Class[objects.length];
+        for (int i = 0; i < objects.length; i++)
+            classes[i] = objects[i].getClass();
+        return classes;
+    }
+
+
     /**
      * Returns the datatype with the given primitive/reference {@linkplain Class}<?>.
      *

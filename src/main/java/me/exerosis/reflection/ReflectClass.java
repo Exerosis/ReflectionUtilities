@@ -206,12 +206,12 @@ public class ReflectClass<T> {
     }
 
     //TODO Remake method getters to work with return type, params, and name as well as create exception for method not found!
-    //Method getters.
+    //ReflectMethod getters.
     public <R> ReflectMethod<R> getMethodByReturn(Class<R> returnType) {
         for (ReflectMethod method : allMethods)
             if (returnType.equals(method.getReturnType()))
                 return method;
-        throw new RuntimeException("Method not found!");
+        throw new RuntimeException("ReflectMethod not found!");
     }
 
     public <R> ReflectMethod<R> getMethodByReturn(ReflectClass<R> returnType) {
